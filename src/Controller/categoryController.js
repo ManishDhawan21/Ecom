@@ -1,3 +1,4 @@
+import { request } from "express"
 import CategoryModel from "../Model/CategoryModel.js"
 
 
@@ -63,5 +64,73 @@ export const getCategories = async (request, response) => {
 
         })
     }
+}
+
+//update category
+
+export const updateCategory = async (request,response,next)=>{
+  try{
+    
+      const id = request.params.id;
+      const data = request.body
+      const image = request.imagePath
+      const query = {
+        category_name:data.category_name,
+        category_title:data.category_title,
+        category_image:image,
+        category_meta:data.category_name
+      }
+      console.log(query)
+      
+      const dbRes = await CategoryModel.findByIdAndUpdate(id,query,{new:true})
+      if(dbRes){
+        response.json({
+            status:"success",
+            message:"category update successfully",
+            data:dbRes
+        })
+      }
+      else{
+        response.json({
+            status:"failed",
+            message:"invalid category id"
+        })
+      }
+  }
+  catch(err){
+      response.json({
+        status:"failed",
+        message:"something went wrong"
+      })
+  }
+}
+
+//delete category
+export const deleteCategory = async(request,response,next)=>{
+   try{
+      const {id} = request.params
+      const dbRes = await CategoryModel.deleteOne({_id:id})
+      if(dbRes){
+        response.json({
+            status:"success",
+            message:"category delete successfully",
+            data:dbRes
+            
+        })
+      }
+      else{
+        response.json({
+            status:"failed",
+            message:"invalid category id"
+        })
+      }
+
+   }
+   catch(err){
+         response.json({
+        status:"failed",
+        message:"something went wrong"
+      })
+   }
 }
 

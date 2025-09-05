@@ -44,10 +44,11 @@ export const addProduct = async (request, response, next) => {
    }
 }
 
+//get product
 export const getProduct = async (request, response) => {
    try {
       const d = await client.get("myDataToken");
-      if (d){
+      if (d) {
          console.log("redis  get call...")
          return response.json({
             status: "success",
@@ -57,7 +58,7 @@ export const getProduct = async (request, response) => {
       }
       const dbRes = await ProductModel.find({});
       console.log("redis data set")
-      await client.set("myDataToken",JSON.stringify(dbRes));
+      await client.set("myDataToken", JSON.stringify(dbRes));
       if (dbRes) {
          response.json({
             status: "success",
@@ -76,6 +77,89 @@ export const getProduct = async (request, response) => {
          status: "failed",
          message: "bad request",
          error: err
+      })
+   }
+}
+
+//update product
+export const updateProduct = async (request, response, next) => {
+   try {
+      
+      const {id} = request.params;
+      const data = request.body;
+      const image = request.files;
+      const query = {
+         product_name: data.product_name,
+         cat_id: data.cat_id,
+         sub_cat_id: data.sub_cat_id,
+         product_price: data.product_price,
+         product_rating: data.product_rating,
+         product_stock: data.product_stock,
+         product_discount: data.product_discount,
+         product_title: data.product_title,
+         product_meta: data.product_meta,
+         product_description: data.product_description
+      }
+
+       if (image.image1 && image.image1[0]) {
+      query.product_image = image.image1[0].filename
+    }
+    if (image.image2 && image.image2[0]) {
+      query.product_image_2 = image.image2[0].filename;
+    }
+
+     
+
+      const dbRes = await ProductModel.findByIdAndUpdate(id, query, { new: true })
+      if (dbRes) {
+         response.json({
+            status: "success",
+            message: "product update successfully",
+            data: dbRes
+         })
+      }
+      else {
+         response.json({
+            status: "failed",
+            message: "invalid product id"
+         })
+      }
+   }
+   catch (err) {
+      response.json({
+         status: "failed",
+         message: "something went wrong"
+      })
+   }
+}
+
+
+////delete Product
+export const deleteProduct = async(request,response,next)=>{
+   try{
+      const {id} = request.params
+      console.log(id)
+      const dbRes = await ProductModel.deleteOne({_id:id})
+      if(dbRes){
+        response.json({
+            status:"success",
+            message:"product delete successfully",
+            data:dbRes
+            
+        })
+      }
+      else{
+        response.json({
+            status:"failed",
+            message:"invalid product id"
+        })
+      }
+
+   }
+   catch(err){
+         response.json({
+        status:"failed",
+        message:"something went wrong"
       })
    }
 }

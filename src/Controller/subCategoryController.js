@@ -41,7 +41,7 @@ export const getSubCategories = async (request, response) => {
         if (dbRes) {
             response.json({
                 status: "success",
-                message: "get categories successfully",
+                message: "get Subcategories successfully",
                 data: dbRes
             })
         }
@@ -60,4 +60,72 @@ export const getSubCategories = async (request, response) => {
 
         })
     }
+}
+
+//Update category
+export const updateSubCategory = async (request,response,next)=>{
+  try{
+    
+      const id = request.params.id;
+      const data = request.body
+      const query = {
+        sub_cat_title:data.sub_cat_title,
+        cat_id:data.cat_id,
+        sub_cat_name:data.sub_cat_name,
+        sub_cat_meta:data.sub_cat_meta
+      }
+      
+      const dbRes = await SubCatModel.findByIdAndUpdate(id,query,{new:true})
+      if(dbRes){
+        response.json({
+            status:"success",
+            message:"Subcategory update successfully",
+            data:dbRes
+        })
+      }
+      else{
+        response.json({
+            status:"failed",
+            message:"invalid Subcategory id"
+        })
+      }
+  }
+  catch(err){
+      response.json({
+        status:"failed",
+        message:"something went wrong"
+      })
+  }
+}
+
+
+//delete Sub Category
+
+export const deleteSubCategory = async(request,response,next)=>{
+   try{
+      const {id} = request.params
+     
+      const dbRes = await SubCatModel.deleteOne({_id:id})
+      if(dbRes){
+        response.json({
+            status:"success",
+            message:"Subcategory delete successfully",
+            data:dbRes
+            
+        })
+      }
+      else{
+        response.json({
+            status:"failed",
+            message:"invalid Subcategory id"
+        })
+      }
+
+   }
+   catch(err){
+         response.json({
+        status:"failed",
+        message:"something went wrong"
+      })
+   }
 }
