@@ -3,7 +3,7 @@ import { addCategory,  getCategories, } from '../Controller/categoryController.j
 import { adminMiddleware, AuthMiddleware } from '../Middleware/AuthMiddleware.js';
 import upload from '../Middleware/UploadMiddleware.js';
 import { addSubCategory, getSubCategories } from '../Controller/subCategoryController.js';
-import { addProduct } from '../Controller/productController.js';
+import { addProduct, getProduct } from '../Controller/productController.js';
 
 const adminRouter = express.Router();
 
@@ -21,5 +21,6 @@ adminRouter.get("/getSubCategories",getSubCategories);
 
 //product
 adminRouter.post('/addProduct',upload.fields([{name:"image1"},{name:"image2"}]),addProduct)
+adminRouter.get('/getProduct',getProduct)
 
 export default adminRouter;

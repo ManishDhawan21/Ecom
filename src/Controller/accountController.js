@@ -1,6 +1,7 @@
 import AccountModel from "../Model/AccountModel.js"
 import { comparePassword, hashPassword } from "../utils/utils.js"
 import { blacklistToken, genrateToken } from "../utils/jwt.js"
+import client from "../redis/redis.js"
 
 //signup
 export const signup = async (request,response)=>{
@@ -51,6 +52,7 @@ export const signIn = async (request,response)=>{
                 role:dbRes.role
             }
             const token = await genrateToken(payload)
+            await client.setEx(token,60*60*24,"exam")
             response.json({
                 status:"success",
                 token:token,
@@ -79,7 +81,8 @@ export const signIn = async (request,response)=>{
 
 export const logout =async (request,response,next)=>{
  try{
-       const isLoggedOut = blacklistToken(request.headers.authorization?.split(' ')[1]);
+       const isLoggedOut = await blacklistToken(request.headers.authorization?.split(' ')[1]);
+
     if(isLoggedOut){
         response.json({
             status:"success",
